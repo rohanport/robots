@@ -31,24 +31,22 @@ docker compose build
 We use [Docker Compose](https://docs.docker.com/compose/) to automate building, as shown above, but also for various useful entry points into the Docker container once it has been built.
 **All `docker compose` commands below should be run from your host machine, and not from inside the container**.
 
-To enter a Terminal in the overlay container, first start a container:
+To enter a Terminal in the overlay container:
 
 ```
-docker compose up overlay
-```
+# Start the dev container
+docker compose up ros_overlay -d
 
-Then, in a separate Terminal, you can access the running container:
-
-```
-docker exec -it robots-overlay-1 bash
+# Open an interactive shell to the container
+docker compose exec -it ros_overlay bash
 ```
 
 If you want to develop using Docker, you can can also launch a dev container using:
 
 ```
 # Start the dev container
-docker compose up dev
+docker compose up ros_dev -d
 
-# Open as many interactive shells as you want to the container
-docker compose exec -it dev bash
+# Open an interactive shell to the container
+docker compose exec -it ros_dev bash
 ```

@@ -14,11 +14,11 @@
 version: "3.9"
 services:
   # Base image containing dependencies.
-  base:
-    image: ros:base
+  ros_base:
+    image: robots:ros_base
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/ros/Dockerfile
       args:
         ROS_DISTRO: humble
       target: base
@@ -41,22 +41,22 @@ services:
       - ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority
 
   # Overlay image containing the example source code.
-  overlay:
-    extends: base
-    image: ros:overlay
+  ros_overlay:
+    extends: ros_base
+    image: robots:ros_overlay
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/ros/Dockerfile
       target: overlay
     command: sleep infinity
 
   # Developer container
-  dev:
-    extends: overlay
-    image: ros:dev
+  ros_dev:
+    extends: ros_overlay
+    image: robots:ros_dev
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/ros/Dockerfile
       target: dev
       args:
         - UID=${UID:-1000}
@@ -64,7 +64,7 @@ services:
         - USERNAME=${USERNAME:-devuser}
     volumes:
       # Mount the source code
-      - ./pathfinder:/overlay_ws/src/pathfinder:rw
+      - ./ros/pathfinder:/overlay_ws/src/pathfinder:rw
       # Mount colcon build artifacts for faster rebuilds
       - ./.colcon/build/:/overlay_ws/build/:rw
       - ./.colcon/install/:/overlay_ws/install/:rw
@@ -74,5 +74,6 @@ services:
 
   # turtlesim demo
   turtlesim:
-    extends: overlay
+    image: robots:turtlesim
+    extends: ros_overlay
     command: ros2 run turtlesim turtlesim_node

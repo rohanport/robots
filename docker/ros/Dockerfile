@@ -23,7 +23,7 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 # Create Colcon workspace with external dependencies
 RUN mkdir -p /ros_ws/src
 WORKDIR /ros_ws/src
-COPY dependencies.repos .
+COPY ./ros/dependencies.repos .
 RUN vcs import < dependencies.repos
 
 # Build the base Colcon workspace, installing dependencies first.
@@ -41,7 +41,7 @@ ENV NO_AT_BRIDGE 1
 
 # Set up the entrypoint
 WORKDIR /ros_ws
-COPY ./docker/entrypoint.sh /
+COPY ./docker/ros/entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
 
 #####################################
@@ -52,13 +52,16 @@ FROM base AS overlay
 # Create an overlay Colcon workspace
 RUN mkdir -p /overlay_ws/src
 WORKDIR /overlay_ws
-COPY ./pathfinder/ ./src/pathfinder/
+
+# Copy nodes into overlay
+COPY ./ros/pathfinder/ ./src/pathfinder/
+
 RUN source /ros_ws/install/setup.bash \
  && rosdep install --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} -y \
  && colcon build --symlink-install
 
 # Set up the entrypoint
-COPY ./docker/entrypoint.sh /
+COPY ./docker/ros/entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
 
 #####################
