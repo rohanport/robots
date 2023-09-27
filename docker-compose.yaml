@@ -13,6 +13,24 @@
 
 version: "3.9"
 services:
+  event-bus:
+    image: robots:event-bus
+    build:
+      context: .
+      dockerfile: docker/event-bus/Dockerfile
+      target: event-bus
+    # Interactive shell
+    stdin_open: true
+    tty: true
+    # Networking and IPC for ROS 2
+    network_mode: host
+    ipc: host
+    volumes:
+      # Mount the source code
+      - ./event-bus:/event-bus:rw
+    user: bun
+    command: sleep infinity
+
   # ROS Base image
   ros_base:
     image: robots:ros_base
