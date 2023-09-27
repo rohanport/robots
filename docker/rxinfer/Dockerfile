@@ -1,21 +1,12 @@
 ########################
 #  RxInfer Environment #
 ########################
-FROM ubuntu:latest as rxinfer
+FROM julia:latest as rxinfer
 SHELL ["/bin/bash", "-c"]
 
 # Install basic apt packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
- git wget ca-certificates sudo
-
-# Update certs
-RUN update-ca-certificates
-
-# Install Julia
-RUN wget https://julialang-s3.julialang.org/bin/linux/x64/1.9/julia-1.9.3-linux-x86_64.tar.gz
-RUN tar -zxvf julia-1.9.3-linux-x86_64.tar.gz
-ENV PATH "$PATH:/julia-1.9.3/bin"
-RUN rm julia-1.9.3-linux-x86_64.tar.gz
+ git sudo
 
 # Setup the rxinfer julia environment
 RUN mkdir /rxinfer
