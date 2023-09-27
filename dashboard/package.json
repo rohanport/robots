@@ -1,0 +1,31 @@
+{
+  "name": "dashboard",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "react": "latest",
+    "react-dom": "latest",
+    "next": "latest",
+    "echarts": "^5.4.2",
+    "echarts-for-react": "^3.0.2",
+    "react-use-websocket": "^4.3.1",
+    "styled-components": "^5.3.10"
+  },
+  "devDependencies": {
+    "@types/styled-components": "^5.1.26",
+    "typescript": "latest",
+    "@types/react": "latest",
+    "@types/node": "latest",
+    "@types/react-dom": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest",
+    "bun-types": "latest"
+  }
+}
