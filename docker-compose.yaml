@@ -22,7 +22,6 @@ services:
     # Interactive shell
     stdin_open: true
     tty: true
-    # Networking and IPC for ROS 2
     network_mode: host
     ipc: host
     volumes:
@@ -43,7 +42,6 @@ services:
     # Interactive shell
     stdin_open: true
     tty: true
-    # Networking and IPC for ROS 2
     network_mode: host
     ipc: host
     # Needed to display graphical applications
@@ -108,7 +106,6 @@ services:
     # Interactive shell
     stdin_open: true
     tty: true
-    # Networking and IPC
     network_mode: host
     ipc: host
     command: sleep infinity
