@@ -13,7 +13,7 @@
 
 version: "3.9"
 services:
-  # Base image containing dependencies.
+  # ROS Base image
   ros_base:
     image: robots:ros_base
     build:
@@ -40,7 +40,7 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority
 
-  # Overlay image containing the example source code.
+  # ROS Overlay image containing the source code.
   ros_overlay:
     extends: ros_base
     image: robots:ros_overlay
@@ -50,7 +50,7 @@ services:
       target: overlay
     command: sleep infinity
 
-  # Developer container
+  # ROS Developer container
   ros_dev:
     extends: ros_overlay
     image: robots:ros_dev
@@ -71,6 +71,35 @@ services:
       - ./.colcon/log/:/overlay_ws/log/:rw
     user: ${USERNAME:-devuser}
     command: sleep infinity
+
+  # RxInfer image
+  rxinfer:
+    image: robots:rxinfer
+    build:
+      context: .
+      dockerfile: docker/rxinfer/Dockerfile
+      target: rxinfer
+      args:
+        - UID=${UID:-1000}
+        - GID=${UID:-1000}
+        - USERNAME=${USERNAME:-rxinfer}
+    volumes:
+      # Mount the source code
+      - ./rxinfer:/rxinfer:rw
+    user: ${USERNAME:-rxinfer}
+    # Interactive shell
+    stdin_open: true
+    tty: true
+    # Networking and IPC
+    network_mode: host
+    ipc: host
+    command: sleep infinity
+
+  # RxInfer Developer container
+  rxinfer_pathfinder:
+    extends: rxinfer
+    image: robots:rxinfer_pathfinder
+    command: julia pathfinder/main.jl
 
   # turtlesim demo
   turtlesim:
