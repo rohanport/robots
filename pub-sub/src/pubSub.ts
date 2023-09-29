@@ -1,5 +1,4 @@
 type SubscribeMessage = {
-  id: string;
   type: "subscribe";
   payload: {
     topic: string;
@@ -7,7 +6,6 @@ type SubscribeMessage = {
 };
 
 type UnsubscribeMessage = {
-  id: string;
   type: "unsubscribe";
   payload: {
     topic: string;
@@ -15,7 +13,6 @@ type UnsubscribeMessage = {
 };
 
 type EventMessage = {
-  id: string;
   type: "event";
   payload: {
     topic: string;
