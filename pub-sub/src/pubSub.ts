@@ -35,6 +35,7 @@ export const startPubSubServer = () => {
       return new Response("Upgrade failed :(", { status: 500 });
     },
     websocket: {
+      publishToSelf: true,
       message: (ws, messageJsonString) => {
         const message = JSON.parse(messageJsonString.toString());
         console.log("new message:", message);
