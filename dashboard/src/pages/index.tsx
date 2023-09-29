@@ -1,6 +1,6 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
-import { Pathfinder } from "./components";
+import { Pathfinder, RosLogger } from "./components";
 
 export default function Home() {
   return (
@@ -13,6 +13,7 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
         <Pathfinder />
+        <RosLogger />
       </main>
     </>
   );
