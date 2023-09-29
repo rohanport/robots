@@ -1,3 +1,6 @@
+import { RosbridgeServer } from "./RosbridgeServer";
 import { startPubSubServer } from "./pubSub";
 
-startPubSubServer();
+const rosBridgeServer = new RosbridgeServer();
+const pubSubServer = startPubSubServer(rosBridgeServer);
+rosBridgeServer.linkToPubSub(pubSubServer);

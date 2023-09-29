@@ -20,6 +20,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  ros-${ROS_DISTRO}-rmw-cyclonedds-cpp
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
+# Install the rosbridge_server
+RUN apt-get update && apt-get install -y --no-install-recommends \
+ ros-${ROS_DISTRO}-rosbridge-server
+
 # Create Colcon workspace with external dependencies
 RUN mkdir -p /ros_ws/src
 WORKDIR /ros_ws/src

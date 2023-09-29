@@ -1,3 +1,5 @@
+import { RosbridgeServer } from "./RosbridgeServer";
+
 type SubscribeMessage = {
   type: "subscribe";
   payload: {
@@ -22,11 +24,10 @@ type EventMessage = {
 
 type Message = SubscribeMessage | UnsubscribeMessage | EventMessage;
 
-export const startPubSubServer = () => {
+export const startPubSubServer = (rosBridgeServer: RosbridgeServer) => {
   console.log("Starting pub-sub web-server");
-  const allTopics = new Set<string>();
 
-  Bun.serve<Message>({
+  return Bun.serve<Message>({
     fetch(req, server) {
       // upgrade the request to a WebSocket
       if (server.upgrade(req)) {
@@ -41,15 +42,13 @@ export const startPubSubServer = () => {
         console.log("new message:", message);
         const { type } = message;
         const { topic } = message.payload;
-        allTopics.add(topic);
 
         if (type === "subscribe") ws.subscribe(topic);
         if (type === "unsubscribe") ws.unsubscribe(topic);
-        if (type === "event")
+        if (type === "event") {
           ws.publish(topic, JSON.stringify(message.payload.data));
-      },
-      close: (ws) => {
-        allTopics.forEach((topic) => ws.unsubscribe(topic));
+          rosBridgeServer.publish(topic, message.payload.data); // Publish all events through to ROS
+        }
       },
     },
   });
