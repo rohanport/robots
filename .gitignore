@@ -1,3 +1,7 @@
 .colcon/
 .vscode/
 **/__pycache__/
+
+# draw.io save state files
+*.drawio.bkp
+*.drawio:Zone.Identifier
