@@ -30,6 +30,11 @@ services:
     user: bun
     command: bun run start-dev
 
+  pub-sub-dev:
+    image: robots:pub-sub-dev
+    extends: pub-sub
+    command: sleep infinity
+
   # ROS Base image
   ros_base:
     image: robots:ros_base
@@ -132,6 +137,11 @@ services:
       - ./dashboard:/dashboard:rw
     user: bun
     command: bun run dev
+
+  dashboard-dev:
+    image: robots:dashboard-dev
+    extends: dashboard
+    command: sleep infinity
 
   # turtlesim demo
   turtlesim:
