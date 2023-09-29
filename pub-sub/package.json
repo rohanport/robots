@@ -1,5 +1,5 @@
 {
-  "name": "event-bus",
+  "name": "pub-sub",
   "module": "index.ts",
   "type": "module",
   "scripts": {

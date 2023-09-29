@@ -1,4 +1,4 @@
-# event-bus
+# pub-sub
 
 To install dependencies:
 

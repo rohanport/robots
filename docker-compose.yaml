@@ -13,12 +13,12 @@
 
 version: "3.9"
 services:
-  event-bus:
-    image: robots:event-bus
+  pub-sub:
+    image: robots:pub-sub
     build:
       context: .
-      dockerfile: docker/event-bus/Dockerfile
-      target: event-bus
+      dockerfile: docker/pub-sub/Dockerfile
+      target: pub-sub
     # Interactive shell
     stdin_open: true
     tty: true
@@ -26,7 +26,7 @@ services:
     ipc: host
     volumes:
       # Mount the source code
-      - ./event-bus:/event-bus:rw
+      - ./pub-sub:/pub-sub:rw
     user: bun
     command: sleep infinity
 

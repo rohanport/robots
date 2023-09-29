@@ -4,7 +4,7 @@
 FROM oven/bun:latest as dashboard
 SHELL ["/bin/bash", "-c"]
 
-# Setup the event bus environment
+# Setup the dashboard environment
 RUN mkdir /dashboard
 WORKDIR /dashboard
 COPY ./dashboard/ ./

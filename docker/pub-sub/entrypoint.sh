@@ -1,5 +1,5 @@
 #!/bin/bash
-# Basic entrypoint for Event Bus Docker containers
+# Basic entrypoint for pub-sub Docker containers
 
 # Execute the command passed into this entrypoint
 exec "$@"

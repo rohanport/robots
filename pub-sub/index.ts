@@ -27,7 +27,7 @@ type Message = SubscribeMessage | UnsubscribeMessage | EventMessage;
 
 const allTopics = new Set<string>();
 
-console.log("Starting event-bus web-server");
+console.log("Starting pub-sub web-server");
 
 Bun.serve<Message>({
   fetch(req, server) {
