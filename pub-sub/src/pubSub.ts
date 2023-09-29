@@ -22,10 +22,9 @@ type EventMessage = {
 
 type Message = SubscribeMessage | UnsubscribeMessage | EventMessage;
 
-const allTopics = new Set<string>();
-
 export const startPubSubServer = () => {
   console.log("Starting pub-sub web-server");
+  const allTopics = new Set<string>();
 
   Bun.serve<Message>({
     fetch(req, server) {
@@ -36,15 +35,17 @@ export const startPubSubServer = () => {
       return new Response("Upgrade failed :(", { status: 500 });
     },
     websocket: {
-      message: (ws) => {
-        const { type } = ws.data;
-        const { topic } = ws.data.payload;
+      message: (ws, messageJsonString) => {
+        const message = JSON.parse(messageJsonString.toString());
+        console.log("new message:", message);
+        const { type } = message;
+        const { topic } = message.payload;
         allTopics.add(topic);
 
         if (type === "subscribe") ws.subscribe(topic);
         if (type === "unsubscribe") ws.unsubscribe(topic);
         if (type === "event")
-          ws.publish(topic, JSON.stringify(ws.data.payload.data));
+          ws.publish(topic, JSON.stringify(message.payload.data));
       },
       close: (ws) => {
         allTopics.forEach((topic) => ws.unsubscribe(topic));
