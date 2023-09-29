@@ -35,18 +35,18 @@ To enter a Terminal in the overlay container:
 
 ```
 # Start the dev container
-docker compose up ros_overlay -d
+docker compose up ros-overlay -d
 
 # Open an interactive shell to the container
-docker compose exec -it ros_overlay bash
+docker compose exec -it ros-overlay bash
 ```
 
 If you want to develop using Docker, you can can also launch a dev container using:
 
 ```
 # Start the dev container
-docker compose up ros_dev -d
+docker compose up ros-dev -d
 
 # Open an interactive shell to the container
-docker compose exec -it ros_dev bash
+docker compose exec -it ros-dev bash
 ```

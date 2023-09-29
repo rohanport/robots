@@ -36,8 +36,8 @@ services:
     command: sleep infinity
 
   # ROS Base image
-  ros_base:
-    image: robots:ros_base
+  ros-base:
+    image: robots:ros-base
     build:
       context: .
       dockerfile: docker/ros/Dockerfile
@@ -62,9 +62,9 @@ services:
       - ${XAUTHORITY:-$HOME/.Xauthority}:/root/.Xauthority
 
   # ROS Overlay image containing the source code.
-  ros_overlay:
-    extends: ros_base
-    image: robots:ros_overlay
+  ros-overlay:
+    extends: ros-base
+    image: robots:ros-overlay
     build:
       context: .
       dockerfile: docker/ros/Dockerfile
@@ -72,9 +72,9 @@ services:
     command: sleep infinity
 
   # ROS Developer container
-  ros_dev:
-    extends: ros_overlay
-    image: robots:ros_dev
+  ros-dev:
+    extends: ros-overlay
+    image: robots:ros-dev
     build:
       context: .
       dockerfile: docker/ros/Dockerfile
@@ -116,9 +116,9 @@ services:
     command: sleep infinity
 
   # RxInfer Developer container
-  rxinfer_pathfinder:
+  rxinfer-pathfinder:
     extends: rxinfer
-    image: robots:rxinfer_pathfinder
+    image: robots:rxinfer-pathfinder
     command: julia pathfinder/main.jl
 
   dashboard:
@@ -146,5 +146,5 @@ services:
   # turtlesim demo
   turtlesim:
     image: robots:turtlesim
-    extends: ros_overlay
+    extends: ros-overlay
     command: ros2 run turtlesim turtlesim_node
