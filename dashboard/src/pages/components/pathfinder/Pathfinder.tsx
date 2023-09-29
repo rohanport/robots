@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
-import useWebSocket, { ReadyState } from "react-use-websocket";
-import { SERVER_URL } from "../constants";
+import { ReadyState } from "react-use-websocket";
 import { PathfinderChart } from "./PathfinderChart";
 import { LineChart } from "./LineChart";
 import { HungerChart } from "./HungerChart";
+import { pubSubSubscribe, pubSubUnsubscribe, usePubSub } from "@/pages/api";
 
 const freeEnergyHistoryLength = 50;
+
+const topics = ["rxinfer_pathfinder_state", "rxinfer_pathfinder_action"];
 
 export const Pathfinder = () => {
   const [foodP, setFoodP] = useState([0.0, 0.0]);
@@ -23,8 +25,10 @@ export const Pathfinder = () => {
   const [velocityHistory, setVelocityHistory] = useState(
     new Array(freeEnergyHistoryLength).fill(0)
   );
+  const [connected, setConnected] = useState(false);
+  const [paused, setPaused] = useState(false);
 
-  const { lastJsonMessage, readyState, sendMessage } = useWebSocket<{
+  const { lastJsonMessage, readyState, sendMessage } = usePubSub<{
     food_p?: number[];
     p?: number[];
     predicted_ps?: number[][];
@@ -35,10 +39,7 @@ export const Pathfinder = () => {
     free_energy?: number;
     velocity?: number;
     randomness?: number;
-  }>(SERVER_URL, {
-    onMessage: ({ data }) => console.log(JSON.parse(data)),
-    onError: (event) => console.log(event),
-  });
+  }>();
 
   useEffect(() => {
     if (lastJsonMessage === null) return;
@@ -68,14 +69,23 @@ export const Pathfinder = () => {
       setRandomnessHistory(randomnessHistory.slice(1).concat([randomness]));
   }, [lastJsonMessage]);
 
+  const subscribeToTopics = () =>
+    topics.forEach((topic) => pubSubSubscribe(topic, sendMessage));
+  const unsubscribeFromTopics = () =>
+    topics.forEach((topic) => pubSubUnsubscribe(topic, sendMessage));
+
   const pauseFn = useCallback(
     (event: KeyboardEvent) => {
-      console.log(event.code);
-      if (event.code === "Space") {
-        sendMessage("toggle_pause");
+      if (event.code !== "KeyP") return;
+
+      if (paused) {
+        subscribeToTopics();
+      } else {
+        unsubscribeFromTopics();
       }
+      setPaused(!paused);
     },
-    [sendMessage]
+    [sendMessage, paused, setPaused]
   );
 
   useEffect(() => {
@@ -85,6 +95,13 @@ export const Pathfinder = () => {
       document.removeEventListener("keydown", pauseFn, false);
     };
   }, [pauseFn]);
+
+  useEffect(() => {
+    if (!connected && readyState === ReadyState.OPEN) {
+      subscribeToTopics();
+      setConnected(true);
+    }
+  }, [connected, readyState, sendMessage, setConnected]);
 
   if (readyState !== ReadyState.OPEN) {
     return null;

@@ -131,7 +131,7 @@ services:
       # Mount the source code
       - ./dashboard:/dashboard:rw
     user: bun
-    command: sleep infinity
+    command: bun run dev
 
   # turtlesim demo
   turtlesim:
