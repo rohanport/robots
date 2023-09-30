@@ -5,12 +5,16 @@ ARG ROS_DISTRO=humble
 # Base Image for ROS Environment #
 ##################################
 FROM osrf/ros:${ROS_DISTRO}-desktop as base
+ARG GAZEBO_DISTRO
 ENV ROS_DISTRO=${ROS_DISTRO}
+ENV GZ_VERSION=${GAZEBO_DISTRO}
 SHELL ["/bin/bash", "-c"]
+
+RUN echo ${GAZEBO_DISTRO}
 
 # Install basic apt packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
- git python3-pip python3-opencv python3-tk python3-pyqt5.qtwebengine
+ git lsb-release wget gnupg python3-pip python3-opencv python3-tk python3-pyqt5.qtwebengine
 
 # Install required setuptools version
 RUN pip3 install setuptools==58.2.0
@@ -23,6 +27,12 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 # Install the rosbridge_server
 RUN apt-get update && apt-get install -y --no-install-recommends \
  ros-${ROS_DISTRO}-rosbridge-server
+
+# Install Gazebo
+RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
+RUN apt-get update && apt-get install -y --no-install-recommends \
+ gz-${GAZEBO_DISTRO}
 
 # Create Colcon workspace with external dependencies
 RUN mkdir -p /ros_ws/src
@@ -61,6 +71,7 @@ WORKDIR /overlay_ws
 COPY ./ros/pathfinder/ ./src/pathfinder/
 
 RUN source /ros_ws/install/setup.bash \
+ && apt-get update -y \
  && rosdep install --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} -y \
  && colcon build --symlink-install
 
