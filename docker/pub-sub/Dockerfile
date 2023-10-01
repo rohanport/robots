@@ -11,3 +11,5 @@ COPY ./pub-sub/ ./
 
 RUN chown -R bun /pub-sub/
 USER bun
+WORKDIR /pub-sub
+RUN bun install
