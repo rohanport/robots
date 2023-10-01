@@ -24,9 +24,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  ros-${ROS_DISTRO}-rmw-cyclonedds-cpp
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
-# Install the rosbridge_server
+# Install the rosbridge_server and ros_gz
 RUN apt-get update && apt-get install -y --no-install-recommends \
- ros-${ROS_DISTRO}-rosbridge-server
+ ros-${ROS_DISTRO}-rosbridge-server ros-${ROS_DISTRO}-ros-gz
 
 # Install Gazebo
 RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
@@ -37,6 +37,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Create Colcon workspace with external dependencies
 RUN mkdir -p /ros_ws/src
 WORKDIR /ros_ws/src
+
 COPY ./ros/dependencies.repos .
 RUN vcs import < dependencies.repos
 
