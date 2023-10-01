@@ -87,6 +87,7 @@ services:
     volumes:
       # Mount the source code
       - ./ros/pathfinder:/overlay_ws/src/pathfinder:rw
+      - ./ros/wheely:/overlay_ws/src/wheely:rw
       # Mount colcon build artifacts for faster rebuilds
       - ./.colcon/build/:/overlay_ws/build/:rw
       - ./.colcon/install/:/overlay_ws/install/:rw
