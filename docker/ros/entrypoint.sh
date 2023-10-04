@@ -12,9 +12,10 @@ then
   echo "Sourced base workspace"
 fi
 
-# Source the overlay workspace, if built
+# Grant permissions and source the overlay workspace, if built
 if [ -f /overlay_ws/install/setup.bash ]
 then
+  sudo chown -R ${UID} /overlay_ws/
   source /overlay_ws/install/setup.bash
   echo "Sourced overlay workspace"
 fi
