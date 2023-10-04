@@ -10,8 +10,6 @@ ENV ROS_DISTRO=${ROS_DISTRO}
 ENV GZ_VERSION=${GAZEBO_DISTRO}
 SHELL ["/bin/bash", "-c"]
 
-RUN echo ${GAZEBO_DISTRO}
-
 # Install basic apt packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
  git lsb-release wget gnupg python3-pip python3-opencv python3-tk python3-pyqt5.qtwebengine
