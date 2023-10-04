@@ -144,9 +144,3 @@ services:
     image: robots:dashboard-dev
     extends: dashboard
     command: sleep infinity
-
-  # turtlesim demo
-  turtlesim:
-    image: robots:turtlesim
-    extends: ros-overlay
-    command: ros2 run turtlesim turtlesim_node
