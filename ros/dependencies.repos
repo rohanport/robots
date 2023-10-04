@@ -3,3 +3,13 @@ repositories:
     type: git
     url: https://github.com/ros/joint_state_publisher
     version: ros2
+  
+  ros2_control:
+    type: git
+    url: https://github.com/ros-controls/ros2_control
+    version: humble
+
+  gz_ros2_control:
+    type: git
+    url: https://github.com/ros-controls/gz_ros2_control
+    version: humble

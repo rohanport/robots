@@ -13,7 +13,7 @@ setup(
             ['resource/' + package_name]
         ),
         (
-            'share/' + package_name, 
+            'share/' + package_name,
             ['package.xml']
         ),
         (
@@ -23,6 +23,10 @@ setup(
         (
             'share/' + package_name + '/description',
             glob('description/*')
+        ),
+        (
+            'share/' + package_name + '/worlds',
+            glob('worlds/*')
         ),
     ],
     install_requires=['setuptools'],
