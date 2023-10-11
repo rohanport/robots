@@ -1,5 +1,5 @@
 # ROS distribution to use
-ARG ROS_DISTRO=humble
+ARG ROS_DISTRO=iron
 
 ##################################
 # Base Image for ROS Environment #
@@ -22,9 +22,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  ros-${ROS_DISTRO}-rmw-cyclonedds-cpp
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
-# Install the rosbridge_server and ros_gz
+# Install ros2 packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
- ros-${ROS_DISTRO}-rosbridge-server ros-${ROS_DISTRO}-ros-gz
+ ros-${ROS_DISTRO}-rosbridge-server \
+ ros-${ROS_DISTRO}-ros-gz \
+ ros-${ROS_DISTRO}-ros2-control \
+ ros-${ROS_DISTRO}-ros2-controllers \
+ ros-${ROS_DISTRO}-gz-ros2-control
 
 # Install Gazebo
 RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
@@ -43,7 +47,7 @@ RUN vcs import < dependencies.repos
 WORKDIR /ros_ws
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash \
  && apt-get update -y \
- && rosdep install --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} -y \
+ && rosdep install -r --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} -y \
  && colcon build --symlink-install
 
 # Remove display warnings

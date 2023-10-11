@@ -42,7 +42,7 @@ services:
       context: .
       dockerfile: docker/ros/Dockerfile
       args:
-        - ROS_DISTRO=humble
+        - ROS_DISTRO=iron
         - GAZEBO_DISTRO=fortress
       target: base
     # Interactive shell
