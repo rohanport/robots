@@ -15,12 +15,14 @@ def generate_launch_description():
 
     # Specify the name of the package and path to xacro file within the package
     pkg_name = 'wheely'
+    world_file = os.path.join(get_package_share_directory(
+        pkg_name), 'worlds', 'world.sdf')
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [os.path.join(get_package_share_directory('ros_gz_sim'),
                           'launch', 'gz_sim.launch.py')]),
-        launch_arguments=[('gz_args', [' -r -v 4 empty.sdf'])])
+        launch_arguments=[('gz_args', [' -r -v 4 ' + world_file])])
 
     robot_state_publisher = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
@@ -28,12 +30,6 @@ def generate_launch_description():
                           'launch'), '/robot_state_publisher.launch.py']
         ),
         launch_arguments={'use_sim_time': 'true'}.items()
-    )
-
-    list_hardware_interfaces = Node(
-        package="controller_manager",
-        executable="spawner",
-        arguments=["joint_broad"],
     )
 
     spawn_wheely = Node(
@@ -63,7 +59,10 @@ def generate_launch_description():
     bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        arguments=['/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock'],
+        arguments=[
+            '/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock',
+            '/lidar@sensor_msgs/msg/LaserScan[ignition.msgs.LaserScan'
+        ],
         output='screen'
     )
 
@@ -79,8 +78,8 @@ def generate_launch_description():
         ),
         RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action=spawn_joint_broad_controller,
-                on_exit=[spawn_diff_cont_controller],
+                target_action=spawn_wheely,
+                on_exit=[spawn_joint_broad_controller],
             )
         ),
         robot_state_publisher,
