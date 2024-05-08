@@ -61,7 +61,8 @@ def generate_launch_description():
         executable='parameter_bridge',
         arguments=[
             '/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock',
-            '/lidar@sensor_msgs/msg/LaserScan[ignition.msgs.LaserScan'
+            '/lidar@sensor_msgs/msg/LaserScan[ignition.msgs.LaserScan',
+            '/world/sensor_world/pose/info@geometry_msgs/msg/PoseArray[gz.msgs.Pose_V'
         ],
         output='screen'
     )

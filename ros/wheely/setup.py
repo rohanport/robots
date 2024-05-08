@@ -42,6 +42,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'food_manager = wheely.food_manager:main',
         ],
     },
 )
