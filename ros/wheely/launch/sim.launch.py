@@ -55,6 +55,11 @@ def generate_launch_description():
         arguments=["diff_cont"],
     )
 
+    spawn_sensor_position = Node(
+        package="wheely",
+        executable="sensor_position"
+    )
+
     # Bridge
     bridge = Node(
         package='ros_gz_bridge',
@@ -82,6 +87,12 @@ def generate_launch_description():
             event_handler=OnProcessExit(
                 target_action=spawn_wheely,
                 on_exit=[spawn_joint_broad_controller],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=spawn_wheely,
+                on_exit=[spawn_sensor_position],
             )
         ),
         robot_state_publisher,
