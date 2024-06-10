@@ -62,7 +62,7 @@ def generate_launch_description():
         arguments=[
             '/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock',
             '/lidar@sensor_msgs/msg/LaserScan[ignition.msgs.LaserScan', # Lidar reading from GZ
-            '/world/sensor_world/pose/info@geometry_msgs/msg/PoseArray[gz.msgs.Pose_V', # World positions from GZ
+            '/model/wheely/pose@geometry_msgs/msg/TransformStamped[ignition.msgs.Pose', # Model positions from GZ
             '/diff_cont/cmd_vel@geometry_msgs/msg/Twist]ignition.msgs.Twist', # Diff drive commands from ROS2
         ],
         output='screen'
