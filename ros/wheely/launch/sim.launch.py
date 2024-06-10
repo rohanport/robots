@@ -61,8 +61,9 @@ def generate_launch_description():
         executable='parameter_bridge',
         arguments=[
             '/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock',
-            '/lidar@sensor_msgs/msg/LaserScan[ignition.msgs.LaserScan',
-            '/world/sensor_world/pose/info@geometry_msgs/msg/PoseArray[gz.msgs.Pose_V'
+            '/lidar@sensor_msgs/msg/LaserScan[ignition.msgs.LaserScan', # Lidar reading from GZ
+            '/world/sensor_world/pose/info@geometry_msgs/msg/PoseArray[gz.msgs.Pose_V', # World positions from GZ
+            '/diff_cont/cmd_vel@geometry_msgs/msg/Twist]ignition.msgs.Twist', # Diff drive commands from ROS2
         ],
         output='screen'
     )
