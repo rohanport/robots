@@ -7,8 +7,7 @@ export class RosbridgeServer extends Ros {
   private topicsPoll: Timer | null;
 
   public constructor() {
-    const rosBridgeServerUrl = process.env.ROS_BRIDGE_SERVER_URL;
-    super({ url: rosBridgeServerUrl, transportLibrary: "websocket" });
+    super({ url: "ws://localhost:9090", transportLibrary: "websocket" });
     this.pubSubServer = null;
     this.topics = {};
     this.topicsPoll = null;
@@ -38,11 +37,16 @@ export class RosbridgeServer extends Ros {
     const pubSubServer = this.pubSubServer;
     if (!pubSubServer) return;
 
-    pubSubServer.publish(topic, JSON.stringify(message));
+    pubSubServer.publish(
+      topic,
+      JSON.stringify({ type: "event", payload: { topic, data: message } })
+    );
   }
 
   private subscribeToTopic(name: string, messageType: string) {
     if (this.topics[name]) return;
+
+    console.log("subscribing to", name);
 
     const topic = new Topic<Record<string, unknown>>({
       ros: this,

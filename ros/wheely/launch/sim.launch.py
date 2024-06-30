@@ -32,6 +32,13 @@ def generate_launch_description():
         launch_arguments={'use_sim_time': 'true'}.items()
     )
 
+    rosbridge_server = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [os.path.join(get_package_share_directory(pkg_name),
+                          'launch'), '/rosbridge_server.launch.py']
+        )
+    )
+
     spawn_wheely = Node(
         package='ros_gz_sim',
         executable='create',
@@ -89,12 +96,13 @@ def generate_launch_description():
                 on_exit=[spawn_joint_broad_controller],
             )
         ),
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=spawn_wheely,
-                on_exit=[spawn_sensor_position],
-            )
-        ),
+        # RegisterEventHandler(
+        #     event_handler=OnProcessExit(
+        #         target_action=spawn_wheely,
+        #         on_exit=[spawn_sensor_position],
+        #     )
+        # ),
         robot_state_publisher,
+        rosbridge_server,
         spawn_wheely,
     ])
