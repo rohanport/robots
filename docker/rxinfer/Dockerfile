@@ -1,7 +1,7 @@
 ########################
 #  RxInfer Environment #
 ########################
-FROM julia:latest as rxinfer
+FROM julia:latest AS rxinfer
 SHELL ["/bin/bash", "-c"]
 
 # Install basic apt packages

@@ -124,7 +124,16 @@ services:
     command: julia pathfinder/main.jl
     network_mode: host
     environment:
-      PUB_SUB_URL: ws://127.0.0.1:8020
+      PUB_SUB_URL: ws://127.0.0.1:3000
+
+  # RxInfer Developer container
+  rxinfer-wheely:
+    extends: rxinfer
+    image: robots:rxinfer-wheely
+    command: julia wheely/main.jl
+    network_mode: host
+    environment:
+      PUB_SUB_URL: ws://127.0.0.1:3000
 
   dashboard:
     image: robots:dashboard
