@@ -28,6 +28,7 @@ find_package(rosidl_default_generators REQUIRED)
 
 set(msg_files
   "msg/SensoryStatePosition.msg"
+  "msg/ActionDiffDrive.msg"
 )
 
 rosidl_generate_interfaces(${PROJECT_NAME}

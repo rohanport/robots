@@ -43,6 +43,7 @@ setup(
     entry_points={
         'console_scripts': [
             'sensor_position = wheely.sensor_position:main',
+            'action_diff_drive = wheely.action_diff_drive:main',
         ],
     },
 )
