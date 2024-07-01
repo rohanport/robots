@@ -15,15 +15,17 @@ pathfinder_server = WebSockets.open(ENV["PUB_SUB_URL"]) do ws
 
     ready_for_next_observation = false
      
-    calculate_action_actor = ((actions, ps, free_energy),) -> begin
-        action = mean(actions[1])
+    calculate_action_actor = ((ang_vels, trans_vels, ps, free_energy),) -> begin
+        ang_vel = mean(ang_vels[1])
+        trans_vel = mean(trans_vels[1])
         p = mean(ps[1])
         predicted_ps = map(x -> mean(x), ps)
 
         println("free_energy: $free_energy")
         
         payload = (
-            action = action,
+            ang_vel = ang_vel,
+            trans_vel = trans_vel,
         )
         next!(actions_stream, payload)
         ready_for_next_observation = true
@@ -32,8 +34,9 @@ pathfinder_server = WebSockets.open(ENV["PUB_SUB_URL"]) do ws
     engine = create_wheely_agent(observations_stream)
 
     subscribe!(
-            engine.posteriors[:action_k]
+            engine.posteriors[:ang_vel_k]
             |> with_latest(
+                engine.posteriors[:trans_vel_k],
                 engine.posteriors[:p_k],
                 engine.free_energy),
             calculate_action_actor
@@ -49,10 +52,7 @@ pathfinder_server = WebSockets.open(ENV["PUB_SUB_URL"]) do ws
     pubsub_sub("/sensory_states/position", sender)
     
     # Start publishing new events from datastreams
-    subscribe!(
-        actions_stream |> map(Dict{String, Float64}, (action) -> Dict("x" => action[:action][1], "y" => action[:action][2])), 
-        pubsub_pub_actor("/rxinfer/wheely/action/diff_drive", sender)
-    )
+    subscribe!(actions_stream, pubsub_pub_actor("/rxinfer/wheely/action/diff_drive", sender))
 
     ready_for_next_observation = true
     for msg in ws
@@ -63,7 +63,7 @@ pathfinder_server = WebSockets.open(ENV["PUB_SUB_URL"]) do ws
                 data = payload["data"]
                 if (ready_for_next_observation)
                     ready_for_next_observation = false
-                    next!(observations_stream, (p = [data["x"], data["y"]],))
+                    next!(observations_stream, (p = [data["x"], data["y"]], o = data["yaw"],))
                 end
             end
         end

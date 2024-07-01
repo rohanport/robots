@@ -1,27 +1,41 @@
+include("next_position_node.jl")
+
 using RxInfer, StableRNGs
 
 @model function wheely(T)
     # Sensory input state
-    p = datavar(Vector{Float64})
-    p_k = randomvar(T)
-    
-    # Future actions state
-    action_k = randomvar(T) # predicted distribution of x/y change of actions 
+    p = datavar(Vector{Float64}) # position
+    p_k = randomvar(T) # predicted future positions
+    o = datavar(Float64) # orientation
+    o_k = randomvar(T) # predicted future orientations
+
+    trans_vel_k = randomvar(T) # predicted distribution of translation velocity actions 
+    ang_vel_k = randomvar(T) # predicted distribution of angular velocity actions 
  
     # Internal states    
     curr_p ~ MvNormalMeanCovariance(p, 0.00001 * diageye(2))
     prev_p = curr_p
+
+    curr_o ~ NormalMeanVariance(o, 0.00001)
+    prev_o = curr_o
     
     println("making look ahead states")
     for k in 1:T
         println(k)
+
+        ang_vel_k[k] ~ NormalMeanVariance(0.0, 0.6)
+        o_k[k] ~ prev_o + ang_vel_k[k]
         
-        action_k[k] ~ MvNormalMeanCovariance(zeros(2), diageye(2))
-        p_k[k] ~ prev_p + action_k[k]
-        p_k[k] ~ MvNormalMeanCovariance([5.0, 10.0], diageye(2))
+        trans_vel_k[k] ~ NormalMeanVariance(0.0, 0.3)
+
+        p_k[k] ~ NextPositionNode(prev_p, o_k[k], trans_vel_k[k])
+
+        prev_o = o_k[k]
         prev_p = p_k[k]
     end
-
+    
+    p_k[T] ~ MvNormalMeanCovariance([5.0, 10.0], diageye(2)) # Goal state
+    
     println("model done")
 end
 
@@ -36,17 +50,25 @@ function create_wheely_agent(sensory_datastream)
         datastream    = sensory_datastream,
         meta          = wheely_meta(),
         initmarginals = (
-            action_k = vague(MvNormalMeanCovariance, 2),
+            o_k = vague(NormalMeanVariance),
+            curr_o = vague(NormalMeanVariance),
+            ang_vel_k = vague(NormalMeanVariance),
+            trans_vel_k = vague(NormalMeanVariance),
             curr_p = vague(MvNormalMeanCovariance, 2),
             p_k = vague(MvNormalMeanCovariance, 2),
         ),
         initmessages = (
-            action_k = vague(MvNormalMeanCovariance, 2),
+            o_k = vague(NormalMeanVariance),
+            curr_o = vague(NormalMeanVariance),
+            ang_vel_k = vague(NormalMeanVariance),
+            trans_vel_k = vague(NormalMeanVariance),
             curr_p = vague(MvNormalMeanCovariance, 2),
             p_k = vague(MvNormalMeanCovariance, 2),
         ),
         returnvars = (
-            :action_k,
+            :ang_vel_k,
+            :trans_vel_k,
+            :o_k,
             :p_k,
          ),
         iterations    = 10,
