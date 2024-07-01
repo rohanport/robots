@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  git lsb-release wget gnupg python3-pip python3-opencv python3-tk python3-pyqt5.qtwebengine
 
 # Install required setuptools version
-RUN pip3 install setuptools==58.2.0
+RUN pip3 install setuptools==58.2.0 transforms3d
 
 # Use Cyclone DDS as middleware
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -28,7 +28,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  ros-${ROS_DISTRO}-ros-gz \
  ros-${ROS_DISTRO}-ros2-control \
  ros-${ROS_DISTRO}-ros2-controllers \
- ros-${ROS_DISTRO}-gz-ros2-control
+ ros-${ROS_DISTRO}-gz-ros2-control \
+ ros-${ROS_DISTRO}-tf-transformations
 
 # Install Gazebo
 RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
