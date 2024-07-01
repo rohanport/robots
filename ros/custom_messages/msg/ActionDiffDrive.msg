@@ -1,2 +1,2 @@
-float64 x
-float64 y
+float64 ang_vel
+float64 trans_vel

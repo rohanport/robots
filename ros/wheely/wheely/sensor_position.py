@@ -4,7 +4,7 @@ from rclpy.node import Node
 from std_msgs.msg import String
 from geometry_msgs.msg import TransformStamped
 from custom_messages.msg import SensoryStatePosition
-
+from tf_transformations import euler_from_quaternion
 
 class SensorPositionNode(Node):
 
@@ -16,21 +16,26 @@ class SensorPositionNode(Node):
             'model/wheely/pose',
             self.listener_callback,
             10)
-        self.position = SensoryStatePosition()
-        self.position.x = 0.0
-        self.position.y = 0.0
-
+        
         self.publisher = self.create_publisher(SensoryStatePosition, 'sensory_states/position', 10)
-        timer_period = 0.1  # seconds
-        self.timer = self.create_timer(timer_period, self.publish_position)
-
-    def publish_position(self):
-        self.publisher.publish(self.position)
-
+        
     def listener_callback(self, msg):
         if(msg.child_frame_id == 'wheely'):
-            self.position.x = msg.transform.translation.x
-            self.position.y = msg.transform.translation.y
+            
+            orientation_list = [
+                msg.transform.rotation.x,
+                msg.transform.rotation.y,
+                msg.transform.rotation.z,
+                msg.transform.rotation.w
+            ]
+            (roll, pitch, yaw) = euler_from_quaternion(orientation_list)
+
+            sensory_state = SensoryStatePosition()
+            sensory_state.x = msg.transform.translation.x
+            sensory_state.y = msg.transform.translation.y
+            sensory_state.yaw = yaw
+            
+            self.publisher.publish(sensory_state)
 
 
 def main(args=None):
