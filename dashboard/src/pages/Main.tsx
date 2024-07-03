@@ -1,11 +1,12 @@
 import { ReactNode, useState } from "react";
 import Button from "@mui/material/Button";
-import { Pathfinder, RosLogger } from "./components";
+import { Pathfinder, RosLogger, Wheely } from "./components";
 import styled from "styled-components";
 
 const VIEWS = {
   viewPicker: "viewPicker",
   pathFinder: "pathFinder",
+  wheely: "wheely",
   rosLogger: "rosLogger",
 };
 
@@ -43,6 +44,12 @@ export const Main = () => {
         <Pathfinder />
       </ViewWrapper>
     );
+  } else if (view === VIEWS.wheely) {
+    return (
+      <ViewWrapper onBack={onBack}>
+        <Wheely />
+      </ViewWrapper>
+    );
   } else if (view === VIEWS.rosLogger) {
     return (
       <ViewWrapper onBack={onBack}>
@@ -53,6 +60,7 @@ export const Main = () => {
     return (
       <ViewPickerContainer>
         <Button onClick={() => setView(VIEWS.pathFinder)}>Pathfinder</Button>
+        <Button onClick={() => setView(VIEWS.wheely)}>Wheely</Button>
         <Button onClick={() => setView(VIEWS.rosLogger)}>RosLogger</Button>
       </ViewPickerContainer>
     );
