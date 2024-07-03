@@ -18,12 +18,12 @@ const xMax = 30;
 const yMin = -30;
 const yMax = 30;
 
-const topics = ["/sensory_states/position"];
+const topics = ["/ros/wheely/sensory_states/position"];
 
 type PositionMessage = {
   type: "event";
   payload: {
-    topic: "/sensory_states/position";
+    topic: "/ros/wheely/sensory_states/position";
     data: { x: number; y: number; yaw: number };
   };
 };
@@ -49,7 +49,7 @@ export const WheelyChart = () => {
 
     const { payload } = lastJsonMessage;
     const { topic, data } = payload;
-    if (topic === "/sensory_states/position") {
+    if (topic === "/ros/wheely/sensory_states/position") {
       setP([data.x, data.y]);
     }
   }, [lastJsonMessage]);

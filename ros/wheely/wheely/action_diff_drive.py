@@ -21,8 +21,6 @@ class ActionDiffDriveNode(Node):
         
 
     def listener_callback(self, msg):
-        self.get_logger().info('I heard: "%s"' % msg)
-
         ang_vel = max(-1.0, min(msg.ang_vel, 1.0))
         trans_vel = max(-0.5, min(msg.trans_vel, 0.5))
         twist = Twist()

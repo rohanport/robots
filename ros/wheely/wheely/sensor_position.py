@@ -17,7 +17,7 @@ class SensorPositionNode(Node):
             self.listener_callback,
             10)
         
-        self.publisher = self.create_publisher(SensoryStatePosition, 'sensory_states/position', 10)
+        self.publisher = self.create_publisher(SensoryStatePosition, 'ros/wheely/sensory_states/position', 10)
         
     def listener_callback(self, msg):
         if(msg.child_frame_id == 'wheely'):

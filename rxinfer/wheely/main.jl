@@ -49,7 +49,7 @@ pathfinder_server = WebSockets.open(ENV["PUB_SUB_URL"]) do ws
     sender = (msg) -> send(ws, msg)
 
     # Subscribe to relevant topics
-    pubsub_sub("/sensory_states/position", sender)
+    pubsub_sub("/ros/wheely/sensory_states/position", sender)
     
     # Start publishing new events from datastreams
     subscribe!(actions_stream, pubsub_pub_actor("/rxinfer/wheely/action/diff_drive", sender))
@@ -59,7 +59,7 @@ pathfinder_server = WebSockets.open(ENV["PUB_SUB_URL"]) do ws
         json_msg = JSON.parse(msg)
         if (json_msg["type"] == "event")
             payload = json_msg["payload"]
-            if (payload["topic"] == "/sensory_states/position")
+            if (payload["topic"] == "/ros/wheely/sensory_states/position")
                 data = payload["data"]
                 if (ready_for_next_observation)
                     ready_for_next_observation = false
