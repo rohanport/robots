@@ -34,3 +34,19 @@ export const pubSubUnsubscribe = (
   };
   sendMessage(JSON.stringify(subscriptionMessage));
 };
+
+export const pubSubPublishEvent = (
+  topic: string,
+  data: Record<string, unknown>,
+  sendMessage: (msg: string) => void
+) => {
+  const eventMessage = {
+    type: "event",
+    payload: {
+      topic,
+      data,
+    },
+  };
+
+  sendMessage(JSON.stringify(eventMessage));
+};

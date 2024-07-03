@@ -4,6 +4,7 @@ from rclpy.node import Node
 from std_msgs.msg import String
 from geometry_msgs.msg import TransformStamped
 from custom_messages.msg import SensoryStatePosition
+from custom_messages.msg import Pause
 from tf_transformations import euler_from_quaternion
 
 class SensorPositionNode(Node):
@@ -11,15 +12,32 @@ class SensorPositionNode(Node):
     def __init__(self):
         super().__init__('sensor_position')
 
-        self.wheely_position = self.create_subscription(
-            TransformStamped,
-            'model/wheely/pose',
-            self.listener_callback,
+        self.is_paused = True
+        self.pause_sub = self.create_subscription(
+            Pause,
+            'dashboard/wheely/pause',
+            self.pause_callback,
             10)
         
         self.publisher = self.create_publisher(SensoryStatePosition, 'ros/wheely/sensory_states/position', 10)
+
+        self.get_logger().info(f'Started: paused={self.is_paused}')
+
+    def pause_callback(self, msg):
+        if (msg.pause and not self.is_paused):
+            self.destroy_subscription(self.pose_sub)
+            self.is_paused = True
+        elif (not msg.pause and self.is_paused):
+            self.pose_sub = self.create_subscription(
+                TransformStamped,
+                'model/wheely/pose',
+                self.pose_callback,
+                10)
+            self.is_paused = False
         
-    def listener_callback(self, msg):
+        self.get_logger().info(f'paused={self.is_paused}')
+        
+    def pose_callback(self, msg):
         if(msg.child_frame_id == 'wheely'):
             
             orientation_list = [
