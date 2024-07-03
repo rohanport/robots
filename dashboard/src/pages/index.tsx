@@ -1,6 +1,6 @@
 import Head from "next/head";
 import styles from "@/styles/Home.module.css";
-import { Pathfinder, RosLogger } from "./components";
+import { Main } from "./Main";
 
 export default function Home() {
   return (
@@ -12,8 +12,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <Pathfinder />
-        <RosLogger />
+        <Main />
       </main>
     </>
   );

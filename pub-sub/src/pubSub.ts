@@ -40,6 +40,11 @@ export const startPubSubServer = (rosBridgeServer: RosbridgeServer) => {
       message: (ws, messageJsonString) => {
         const message = JSON.parse(messageJsonString.toString());
         console.log("new message:", message);
+
+        if (message.event === "ping") {
+          return; // Ignore pings from dashboard
+        }
+
         const { type } = message;
         const { topic } = message.payload;
 
