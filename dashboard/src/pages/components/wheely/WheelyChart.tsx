@@ -13,10 +13,10 @@ const Container = styled.div`
   aspect-ratio: 1 / 1;
 `;
 
-const xMin = -30;
-const xMax = 30;
-const yMin = -30;
-const yMax = 30;
+const xMin = -15;
+const xMax = 15;
+const yMin = -15;
+const yMax = 15;
 
 const topics = [
   "/ros/wheely/sensory_states/position",
