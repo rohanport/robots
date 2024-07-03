@@ -18,7 +18,10 @@ const xMax = 30;
 const yMin = -30;
 const yMax = 30;
 
-const topics = ["/ros/wheely/sensory_states/position"];
+const topics = [
+  "/ros/wheely/sensory_states/position",
+  "/rxinfer/wheely/predictions",
+];
 
 type PositionMessage = {
   type: "event";
@@ -28,11 +31,22 @@ type PositionMessage = {
   };
 };
 
+type PredictionsMessage = {
+  type: "event";
+  payload: {
+    topic: "/rxinfer/wheely/predictions";
+    data: { ps: [number, number][] };
+  };
+};
+
 export const WheelyChart = () => {
   const [p, setP] = useState([0.0, 0.0]);
+  const [predictedPs, setPredictedPs] = useState<[number, number][]>([]);
+
   const [connected, setConnected] = useState(false);
-  const { lastJsonMessage, readyState, sendMessage } =
-    usePubSub<PositionMessage>();
+  const { lastJsonMessage, readyState, sendMessage } = usePubSub<
+    PositionMessage | PredictionsMessage
+  >();
 
   const subscribeToTopics = () =>
     topics.forEach((topic) => pubSubSubscribe(topic, sendMessage));
@@ -51,6 +65,9 @@ export const WheelyChart = () => {
     const { topic, data } = payload;
     if (topic === "/ros/wheely/sensory_states/position") {
       setP([data.x, data.y]);
+    }
+    if (topic === "/rxinfer/wheely/predictions") {
+      setPredictedPs(data.ps);
     }
   }, [lastJsonMessage]);
 
@@ -71,6 +88,12 @@ export const WheelyChart = () => {
         type: "scatter",
         color: "#5e71c0",
       },
+      ...predictedPs.map((loc, index) => ({
+        type: "scatter",
+        symbolSize: 15,
+        data: [loc],
+        color: `rgb(124, 252, 0, ${0.9 - index / predictedPs.length})`,
+      })),
     ],
   };
 

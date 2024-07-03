@@ -51,7 +51,7 @@ export const startPubSubServer = (rosBridgeServer: RosbridgeServer) => {
         if (type === "subscribe") ws.subscribe(topic);
         if (type === "unsubscribe") ws.unsubscribe(topic);
         if (type === "event") {
-          ws.publish(topic, JSON.stringify(message.payload.data));
+          ws.publish(topic, JSON.stringify(message));
           rosBridgeServer.publish(topic, message.payload.data); // Publish all events through to ROS
         }
       },

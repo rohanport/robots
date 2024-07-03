@@ -11,18 +11,19 @@ pathfinder_server = WebSockets.open(ENV["PUB_SUB_URL"]) do ws
     #          Set up rxinfer engine and world               #
     ##########################################################
 
-    (observations_stream, actions_stream) = create_streams()
+    (
+        observations_stream, 
+        actions_stream, 
+        predictions_stream, 
+        free_energy_stream
+    ) = create_streams()
 
     ready_for_next_observation = false
      
-    calculate_action_actor = ((ang_vels, trans_vels, ps, free_energy),) -> begin
+    actions_actor = ((ang_vels, trans_vels),) -> begin
         ang_vel = mean(ang_vels[1])
         trans_vel = mean(trans_vels[1])
-        p = mean(ps[1])
-        predicted_ps = map(x -> mean(x), ps)
 
-        println("free_energy: $free_energy")
-        
         payload = (
             ang_vel = ang_vel,
             trans_vel = trans_vel,
@@ -30,17 +31,25 @@ pathfinder_server = WebSockets.open(ENV["PUB_SUB_URL"]) do ws
         next!(actions_stream, payload)
         ready_for_next_observation = true
     end
+
+    predictions_actor = (p_dists) -> begin
+        ps = map(x -> mean(x), p_dists)
+        
+        payload = (
+            ps = ps,
+        )
+        next!(predictions_stream, payload)
+    end
  
     engine = create_wheely_agent(observations_stream)
 
     subscribe!(
-            engine.posteriors[:ang_vel_k]
-            |> with_latest(
-                engine.posteriors[:trans_vel_k],
-                engine.posteriors[:p_k],
-                engine.free_energy),
-            calculate_action_actor
+            engine.posteriors[:ang_vel_k] |> with_latest(engine.posteriors[:trans_vel_k]),
+            actions_actor
     )
+
+    subscribe!(engine.posteriors[:p_k], predictions_actor)
+    subscribe!(engine.free_energy, free_energy -> next!(free_energy_stream, (free_energy = free_energy, )))
 
     ########################################################
     #          Set up connections to pub-sub               #
@@ -53,6 +62,8 @@ pathfinder_server = WebSockets.open(ENV["PUB_SUB_URL"]) do ws
     
     # Start publishing new events from datastreams
     subscribe!(actions_stream, pubsub_pub_actor("/rxinfer/wheely/action/diff_drive", sender))
+    subscribe!(predictions_stream, pubsub_pub_actor("/rxinfer/wheely/predictions", sender))
+    subscribe!(free_energy_stream, pubsub_pub_actor("/rxinfer/wheely/free_energy", sender))
 
     ready_for_next_observation = true
     for msg in ws
