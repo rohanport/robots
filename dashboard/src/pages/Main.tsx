@@ -4,7 +4,6 @@ import { Pathfinder, RosLogger, Wheely } from "./components";
 import styled from "styled-components";
 
 const VIEWS = {
-  viewPicker: "viewPicker",
   pathFinder: "pathFinder",
   wheely: "wheely",
   rosLogger: "rosLogger",
@@ -35,8 +34,8 @@ const ViewWrapper = ({
 };
 
 export const Main = () => {
-  const [view, setView] = useState(VIEWS.viewPicker);
-  const onBack = () => setView(VIEWS.viewPicker);
+  const [view, setView] = useState<string | null>(null);
+  const onBack = () => setView(null);
 
   if (view === VIEWS.pathFinder) {
     return (
@@ -56,13 +55,13 @@ export const Main = () => {
         <RosLogger />
       </ViewWrapper>
     );
-  } else {
-    return (
-      <ViewPickerContainer>
-        <Button onClick={() => setView(VIEWS.pathFinder)}>Pathfinder</Button>
-        <Button onClick={() => setView(VIEWS.wheely)}>Wheely</Button>
-        <Button onClick={() => setView(VIEWS.rosLogger)}>RosLogger</Button>
-      </ViewPickerContainer>
-    );
   }
+
+  return (
+    <ViewPickerContainer>
+      <Button onClick={() => setView(VIEWS.pathFinder)}>Pathfinder</Button>
+      <Button onClick={() => setView(VIEWS.wheely)}>Wheely</Button>
+      <Button onClick={() => setView(VIEWS.rosLogger)}>RosLogger</Button>
+    </ViewPickerContainer>
+  );
 };
