@@ -1,19 +1,24 @@
 import { Server } from "bun";
 import { Ros, Topic } from "roslib";
 
+const URL = "ws://localhost:9090";
+
 export class RosbridgeServer extends Ros {
   private pubSubServer: Server | null;
   private readonly topics: Record<string, Topic>;
+  private reconnectionPoll: Timer | null;
   private topicsPoll: Timer | null;
 
   public constructor() {
-    super({ url: "ws://localhost:9090", transportLibrary: "websocket" });
+    super({ url: URL, transportLibrary: "websocket" });
     this.pubSubServer = null;
     this.topics = {};
     this.topicsPoll = null;
 
     this.on("connection", () => {
       console.log("Connected to rosbridge_server.");
+      if (this.reconnectionPoll) clearInterval(this.reconnectionPoll);
+
       this.topicsPoll = setInterval(() => this.updateTopics(), 1000);
     });
     this.on("error", () => {
@@ -22,7 +27,14 @@ export class RosbridgeServer extends Ros {
     });
     this.on("close", () => {
       console.log("Closed connected to rosbridge_server.");
+      if (this.reconnectionPoll) clearInterval(this.reconnectionPoll);
       if (this.topicsPoll) clearInterval(this.topicsPoll);
+      this.topics = {};
+
+      this.reconnectionPoll = setInterval(() => {
+        console.log("Attempting reconnect to rosbridge_server.");
+        this.connect(URL);
+      }, 3000);
     });
   }
 
