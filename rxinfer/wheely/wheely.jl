@@ -21,20 +21,23 @@ using RxInfer, StableRNGs
     
     println("making look ahead states")
     for k in 1:T
-        println(k)
+        println("$(k)")
 
         ang_vel_k[k] ~ NormalMeanVariance(0.0, 0.6)
         o_k[k] ~ prev_o + ang_vel_k[k]
         
         trans_vel_k[k] ~ NormalMeanVariance(0.0, 0.3)
 
-        p_k[k] ~ NextPositionNode(prev_p, o_k[k], trans_vel_k[k])
-
+        p_k[k] ~ NextPositionNode(prev_p, o_k[k], trans_vel_k[k]) where { meta = ( t_delta = 0.2 * (1.5 ^ (k - 1)), ), }
+        
+        if (k > T / 2)
+            p_k[k] ~ MvNormalMeanCovariance([5.0, 10.0], diageye(2)) # Goal state for second half of states
+        end
+        
         prev_o = o_k[k]
         prev_p = p_k[k]
     end
     
-    p_k[T] ~ MvNormalMeanCovariance([5.0, 10.0], diageye(2)) # Goal state
     
     println("model done")
 end

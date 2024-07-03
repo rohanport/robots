@@ -4,47 +4,54 @@ struct NextPositionNode end # Dummy structure just to make Julia happy
 
 @node NextPositionNode Deterministic [ out, p, o, tv ]
 
-# Rule for outbound message on `out` edge given inbound message on `p`, `o` and `tv` edges
+# Rule for outbound message on `out` edge
 @rule NextPositionNode(:out, Marginalisation) (
     m_p::MultivariateNormalDistributionsFamily, 
     m_o::UnivariateNormalDistributionsFamily, 
-    m_tv::UnivariateNormalDistributionsFamily
+    m_tv::UnivariateNormalDistributionsFamily,
+    meta::NamedTuple{(:t_delta,), Tuple{Float64,}}
 ) = begin
+    t_delta = meta[:t_delta]
+
     tv_mean = mean(m_tv)
     tv_var = var(m_tv)
     o_mean = mean(m_o)
     p_mean = mean(m_p)
     p_var = var(m_p)
     dir = [cos(o_mean), sin(o_mean)]
-    out_mean = p_mean + (tv_mean * dir)
-    out_var = p_var + (tv_var * dir)
+    out_mean = p_mean + (t_delta * (tv_mean * dir))
+    out_var = p_var + (t_delta * (tv_var * dir))
 
     return MvNormalMeanCovariance(out_mean, out_var)
 end 
 
-# Rule for outbound message on `p` edge given inbound message on `out`, `o`, and `tv` edges
+# Rule for outbound message on `p` edge
 @rule NextPositionNode(:p, Marginalisation) (
     m_out::MultivariateNormalDistributionsFamily, 
     m_o::UnivariateNormalDistributionsFamily,
-    m_tv::UnivariateNormalDistributionsFamily
+    m_tv::UnivariateNormalDistributionsFamily,
+    meta::NamedTuple{(:t_delta,), Tuple{Float64,}}
 ) = begin
+    t_delta = meta[:t_delta]
+
     tv_mean = mean(m_tv)
     tv_var = var(m_tv)
     o_mean = mean(m_o)
     out_mean = mean(m_out)
     out_var = var(m_out)
     dir = [cos(o_mean), sin(o_mean)]
-    p_mean = out_mean - (tv_mean * dir)
-    p_var = out_var + (tv_var * dir)
+    p_mean = out_mean - (t_delta * (tv_mean * dir))
+    p_var = out_var + (t_delta * (tv_var * dir))
 
     return MvNormalMeanCovariance(p_mean, p_var) 
 end
 
-# Rule for outbound message on `o` edge given inbound message on `out`, `p` and `tv` edges
+# Rule for outbound message on `o` edge
 @rule NextPositionNode(:o, Marginalisation) (
     m_out::MultivariateNormalDistributionsFamily, 
     m_p::MultivariateNormalDistributionsFamily,
-    m_tv::UnivariateNormalDistributionsFamily
+    m_tv::UnivariateNormalDistributionsFamily,
+    meta::NamedTuple{(:t_delta,), Tuple{Float64,}}
 ) = begin
     out_mean = mean(m_out)
     out_var = var(m_out)
@@ -58,11 +65,12 @@ end
     return NormalMeanVariance(o_mean, o_var) 
 end
 
-# Rule for outbound message on `tv` edge given inbound message on `out`, `p` and `o` edges
+# Rule for outbound message on `tv` edge
 @rule NextPositionNode(:tv, Marginalisation) (
     m_out::MultivariateNormalDistributionsFamily, 
     m_p::MultivariateNormalDistributionsFamily, 
-    m_o::UnivariateNormalDistributionsFamily
+    m_o::UnivariateNormalDistributionsFamily,
+    meta::NamedTuple{(:t_delta,), Tuple{Float64,}}
 ) = begin
     out_mean = mean(m_out)
     out_var = var(m_out)
@@ -74,13 +82,13 @@ end
     tv_var = norm(out_var) + norm(p_var)
     
     return NormalMeanVariance(tv_mean, tv_var) 
-end 
+end
 
 @marginalrule NextPositionNode(:p_o_tv) (
     m_out::MultivariateNormalDistributionsFamily, 
     m_p::MultivariateNormalDistributionsFamily, 
     m_o::UnivariateNormalDistributionsFamily, 
-    m_tv::UnivariateNormalDistributionsFamily
+    m_tv::UnivariateNormalDistributionsFamily,
 ) = begin
     return (out = m_out, p = m_p, o = m_o, tv = m_tv,)
 end
