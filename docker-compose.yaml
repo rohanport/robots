@@ -150,7 +150,9 @@ services:
       # Mount the source code
       - ./dashboard:/dashboard:rw
     user: bun
-    command: bun run dev
+    command: bun run --bun dev
+    environment:
+      NEXT_PUBLIC_PUB_SUB_URL: ws://127.0.0.1:3000
 
   dashboard-dev:
     image: robots:dashboard-dev

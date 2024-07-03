@@ -11,3 +11,5 @@ COPY ./dashboard/ ./
 
 RUN chown -R bun /dashboard/
 USER bun
+WORKDIR /dashboard
+RUN bun install
