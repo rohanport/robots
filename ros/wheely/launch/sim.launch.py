@@ -67,6 +67,11 @@ def generate_launch_description():
         executable="sensor_position"
     )
 
+    spawn_action_diff_drive = Node(
+        package="wheely",
+        executable="action_diff_drive"
+    )
+
     # Bridge
     bridge = Node(
         package='ros_gz_bridge',
@@ -87,21 +92,14 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=spawn_wheely,
-                on_exit=[spawn_diff_cont_controller],
+                on_exit=[
+                    spawn_diff_cont_controller, 
+                    spawn_joint_broad_controller,
+                    spawn_sensor_position,
+                    spawn_action_diff_drive
+                ],
             )
         ),
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=spawn_wheely,
-                on_exit=[spawn_joint_broad_controller],
-            )
-        ),
-        # RegisterEventHandler(
-        #     event_handler=OnProcessExit(
-        #         target_action=spawn_wheely,
-        #         on_exit=[spawn_sensor_position],
-        #     )
-        # ),
         robot_state_publisher,
         rosbridge_server,
         spawn_wheely,
