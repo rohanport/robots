@@ -39,7 +39,6 @@ export const startPubSubServer = (rosBridgeServer: RosbridgeServer) => {
       publishToSelf: true,
       message: (ws, messageJsonString) => {
         const message = JSON.parse(messageJsonString.toString());
-        console.log("new message:", message);
 
         if (message.event === "ping") {
           return; // Ignore pings from dashboard

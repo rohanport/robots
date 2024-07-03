@@ -29,7 +29,6 @@ export class RosbridgeServer extends Ros {
       console.log("Closed connected to rosbridge_server.");
       if (this.reconnectionPoll) clearInterval(this.reconnectionPoll);
       if (this.topicsPoll) clearInterval(this.topicsPoll);
-      this.topics = {};
 
       this.reconnectionPoll = setInterval(() => {
         console.log("Attempting reconnect to rosbridge_server.");
@@ -64,6 +63,7 @@ export class RosbridgeServer extends Ros {
       ros: this,
       name,
       messageType,
+      throttle_rate: 50, // throttle all topics
     });
     this.topics[name] = topic;
     topic.subscribe((message) => this.forwardToPubSub(name, message));
