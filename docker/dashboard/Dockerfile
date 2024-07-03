@@ -1,7 +1,7 @@
 ##########################
 #  Dashboard Environment #
 ##########################
-FROM oven/bun:latest as dashboard
+FROM oven/bun:latest AS dashboard
 SHELL ["/bin/bash", "-c"]
 
 # Setup the dashboard environment

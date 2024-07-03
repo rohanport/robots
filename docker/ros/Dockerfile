@@ -4,7 +4,7 @@ ARG ROS_DISTRO=iron
 ##################################
 # Base Image for ROS Environment #
 ##################################
-FROM osrf/ros:${ROS_DISTRO}-desktop as base
+FROM osrf/ros:${ROS_DISTRO}-desktop AS base
 ARG GAZEBO_DISTRO
 ENV ROS_DISTRO=${ROS_DISTRO}
 ENV GZ_VERSION=${GAZEBO_DISTRO}
@@ -86,7 +86,7 @@ ENTRYPOINT [ "/entrypoint.sh" ]
 #####################
 # Development Image #
 #####################
-FROM overlay as dev
+FROM overlay AS dev
 
 # Dev container arguments
 ARG USERNAME=devuser

@@ -1,7 +1,7 @@
 ##########################
 #  pub-sub Environment #
 ##########################
-FROM oven/bun:latest as pub-sub
+FROM oven/bun:latest AS pub-sub
 SHELL ["/bin/bash", "-c"]
 
 # Setup the pub-sub environment
