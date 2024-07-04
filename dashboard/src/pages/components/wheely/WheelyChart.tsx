@@ -3,6 +3,7 @@ import styled from "styled-components";
 import ReactECharts from "echarts-for-react";
 import { usePubSub, pubSubSubscribe } from "@/pages/api";
 import { ReadyState } from "react-use-websocket";
+import { useThrottle } from "@uidotdev/usehooks";
 
 const Container = styled.div`
   flex-grow: 1;
@@ -42,6 +43,9 @@ type PredictionsMessage = {
 export const WheelyChart = () => {
   const [p, setP] = useState([0.0, 0.0]);
   const [predictedPs, setPredictedPs] = useState<[number, number][]>([]);
+
+  const throttledP = useThrottle(p, 500);
+  const throttledPredictedPs = useThrottle(predictedPs, 500);
 
   const [connected, setConnected] = useState(false);
   const { lastJsonMessage, readyState, sendMessage } = usePubSub<
@@ -84,15 +88,15 @@ export const WheelyChart = () => {
     series: [
       {
         symbolSize: 30,
-        data: [p],
+        data: [throttledP],
         type: "scatter",
         color: "#5e71c0",
       },
-      ...predictedPs.map((loc, index) => ({
+      ...throttledPredictedPs.map((loc, index) => ({
         type: "scatter",
         symbolSize: 15,
         data: [loc],
-        color: `rgb(124, 252, 0, ${0.9 - index / predictedPs.length})`,
+        color: `rgb(124, 252, 0, ${0.9 - index / throttledPredictedPs.length})`,
       })),
     ],
   };
