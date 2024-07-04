@@ -72,6 +72,11 @@ def generate_launch_description():
         executable="action_diff_drive"
     )
 
+    spawn_food_manager = Node(
+        package="wheely",
+        executable="food_manager"
+    )
+
     # Bridge
     bridge = Node(
         package='ros_gz_bridge',
@@ -96,7 +101,8 @@ def generate_launch_description():
                     spawn_diff_cont_controller, 
                     spawn_joint_broad_controller,
                     spawn_sensor_position,
-                    spawn_action_diff_drive
+                    spawn_action_diff_drive,
+                    spawn_food_manager,
                 ],
             )
         ),

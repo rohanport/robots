@@ -21,14 +21,23 @@ const yMax = 15;
 
 const topics = [
   "/ros/wheely/sensory_states/position",
+  "/ros/wheely/food/position",
   "/rxinfer/wheely/predictions",
 ];
 
-type PositionMessage = {
+type WheelyPositionMessage = {
   type: "event";
   payload: {
     topic: "/ros/wheely/sensory_states/position";
     data: { x: number; y: number; yaw: number };
+  };
+};
+
+type FoodPositionMessage = {
+  type: "event";
+  payload: {
+    topic: "/ros/wheely/food/position";
+    data: { x: number; y: number };
   };
 };
 
@@ -42,14 +51,16 @@ type PredictionsMessage = {
 
 export const WheelyChart = () => {
   const [p, setP] = useState([0.0, 0.0]);
+  const [foodP, setFoodP] = useState([0.0, 0.0]);
   const [predictedPs, setPredictedPs] = useState<[number, number][]>([]);
 
   const throttledP = useThrottle(p, 500);
+  const throttledFoodP = useThrottle(foodP, 500);
   const throttledPredictedPs = useThrottle(predictedPs, 500);
 
   const [connected, setConnected] = useState(false);
   const { lastJsonMessage, readyState, sendMessage } = usePubSub<
-    PositionMessage | PredictionsMessage
+    WheelyPositionMessage | FoodPositionMessage | PredictionsMessage
   >();
 
   const subscribeToTopics = () =>
@@ -69,6 +80,9 @@ export const WheelyChart = () => {
     const { topic, data } = payload;
     if (topic === "/ros/wheely/sensory_states/position") {
       setP([data.x, data.y]);
+    }
+    if (topic === "/ros/wheely/food/position") {
+      setFoodP([data.x, data.y]);
     }
     if (topic === "/rxinfer/wheely/predictions") {
       setPredictedPs(data.ps);
@@ -91,6 +105,12 @@ export const WheelyChart = () => {
         data: [throttledP],
         type: "scatter",
         color: "#5e71c0",
+      },
+      {
+        symbolSize: 15,
+        data: [throttledFoodP],
+        type: "scatter",
+        color: "red",
       },
       ...throttledPredictedPs.map((loc, index) => ({
         type: "scatter",

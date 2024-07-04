@@ -42,8 +42,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'sensor_position = wheely.sensor_position:main',
             'action_diff_drive = wheely.action_diff_drive:main',
+            'food_manager = wheely.food_manager:main',
+            'sensor_position = wheely.sensor_position:main',
         ],
     },
 )

@@ -59,23 +59,42 @@ pathfinder_server = WebSockets.open(ENV["PUB_SUB_URL"]) do ws
 
     # Subscribe to relevant topics
     pubsub_sub("/ros/wheely/sensory_states/position", sender)
+    pubsub_sub("/ros/wheely/food/position", sender)
     
     # Start publishing new events from datastreams
     subscribe!(actions_stream, pubsub_pub_actor("/rxinfer/wheely/action/diff_drive", sender))
     subscribe!(predictions_stream, pubsub_pub_actor("/rxinfer/wheely/predictions", sender))
     subscribe!(free_energy_stream, pubsub_pub_actor("/rxinfer/wheely/free_energy", sender))
 
+
+    ########################################################
+    #          Handle messages from pub-sub                #
+    ########################################################
+
     ready_for_next_observation = true
+    latest_food_p = [0.0, 0.0]
+    latest_p = [0.0, 0.0]
+    latest_o = 0.0
     for msg in ws
         json_msg = JSON.parse(msg)
         if (json_msg["type"] == "event")
             payload = json_msg["payload"]
             if (payload["topic"] == "/ros/wheely/sensory_states/position")
                 data = payload["data"]
-                if (ready_for_next_observation)
-                    ready_for_next_observation = false
-                    next!(observations_stream, (p = [data["x"], data["y"]], o = data["yaw"],))
-                end
+                latest_p = [data["x"], data["y"]]
+                latest_o = data["yaw"]
+            end
+
+            if (payload["topic"] == "/ros/wheely/food/position")
+                data = payload["data"]
+                latest_food_p = [data["x"], data["y"]]
+            end
+
+            if (ready_for_next_observation)
+                ready_for_next_observation = false
+                observation = (food_p = latest_food_p, p = latest_p, o = latest_o,)
+                println("observation: $(observation)")
+                next!(observations_stream, observation)
             end
         end
     end

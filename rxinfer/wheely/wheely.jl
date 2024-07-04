@@ -4,6 +4,7 @@ using RxInfer, StableRNGs
 
 @model function wheely(T)
     # Sensory input state
+    food_p = datavar(Vector{Float64}) # food position (goal state)
     p = datavar(Vector{Float64}) # position
     p_k = randomvar(T) # predicted future positions
     o = datavar(Float64) # orientation
@@ -34,7 +35,7 @@ using RxInfer, StableRNGs
         p_k[k] ~ NextPositionNode(prev_p, o_k[k], trans_vel_k[k]) where { meta = ( t_delta = t_delta,), }
         
         if (k > T / 2)
-            p_k[k] ~ MvNormalMeanCovariance([5.0, 10.0], diageye(2)) # Goal state for second half of states
+            p_k[k] ~ MvNormalMeanCovariance(food_p, diageye(2)) # Goal state for second half of states
         end
         
         prev_o = o_k[k]

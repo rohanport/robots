@@ -3,8 +3,15 @@ using RxInfer
 function create_streams() 
     observations_stream = Subject(
         NamedTuple{(
-            :p,:o,), 
-        Tuple{Vector{Float64},Float64,}}
+            :food_p,
+            :p,
+            :o,
+        ), 
+        Tuple{
+            Vector{Float64},
+            Vector{Float64},
+            Float64,
+        }}
     )
 
     actions_stream = Subject(
