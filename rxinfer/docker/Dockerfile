@@ -14,7 +14,7 @@ WORKDIR /rxinfer
 COPY ./rxinfer/ ./
 
 # Set up the entrypoint
-COPY ./docker/rxinfer/entrypoint.sh /
+COPY ./rxinfer/docker/entrypoint.sh /
 
 ARG USERNAME=rxinfer
 ARG UID=1000
@@ -32,7 +32,7 @@ RUN groupadd --gid $GID $USERNAME \
 RUN chown -R ${UID}:${GID} /rxinfer/
 
 # Set the user and source entrypoint in the user's .bashrc file
-COPY ./docker/rxinfer/entrypoint.sh /
+COPY ./rxinfer/docker/entrypoint.sh /
 RUN echo "source /entrypoint.sh" >> /home/${USERNAME}/.bashrc
 USER ${USERNAME}
 

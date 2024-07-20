@@ -59,7 +59,7 @@ ENV NO_AT_BRIDGE 1
 
 # Set up the entrypoint
 WORKDIR /ros_ws
-COPY ./docker/ros/entrypoint.sh /
+COPY ./ros/docker/entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
 
 #####################################
@@ -80,7 +80,7 @@ RUN source /ros_ws/install/setup.bash \
  && colcon build --symlink-install
 
 # Set up the entrypoint
-COPY ./docker/ros/entrypoint.sh /
+COPY ./ros/docker/entrypoint.sh /
 ENTRYPOINT [ "/entrypoint.sh" ]
 
 #####################
