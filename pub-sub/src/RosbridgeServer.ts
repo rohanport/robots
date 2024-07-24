@@ -14,6 +14,7 @@ export class RosbridgeServer extends Ros {
     this.pubSubServer = null;
     this.topics = {};
     this.topicsPoll = null;
+    this.reconnectionPoll = null;
 
     this.on("connection", () => {
       console.log("Connected to rosbridge_server.");
