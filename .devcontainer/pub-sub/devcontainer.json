@@ -6,6 +6,7 @@
   "workspaceFolder": "/workspace/pub-sub",
   "customizations": {
     "vscode": {
+      "extensions": ["johnpapa.vscode-peacock"],
       "settings": {
         "terminal.integrated.defaultProfile.linux": "zsh",
         "terminal.integrated.fontFamily": "MesloLGS NF",
