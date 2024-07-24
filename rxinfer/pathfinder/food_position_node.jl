@@ -9,8 +9,8 @@ struct FoodPositionNode end # Dummy structure just to make Julia happy
 # Rule for outbound message on `out` edge given inbound message on `p`, `fdir` and `fint` edges
 @rule FoodPositionNode(:out, Marginalisation) (
     m_p::MultivariateNormalDistributionsFamily, 
-    m_fdir::MultivariateNormalDistributionsFamily, 
-    m_fint::UnivariateNormalDistributionsFamily
+    m_fdir::MultivariateNormalDistributionsFamily,
+    m_fint::UnivariateNormalDistributionsFamily,
 ) = begin
     dist_from_food = cbrt(1/mean(m_fint))
     food_p_m = mean(m_p) + (dist_from_food * mean(m_fdir))
