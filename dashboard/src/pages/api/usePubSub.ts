@@ -1,12 +1,33 @@
-import useWebSocket from "react-use-websocket";
+import { useEffect, useState } from "react";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 
-export const usePubSub = <Messages>() => {
+export const usePubSub = <Messages>(
+  topics: string[] = [],
+  messageHandler: (m: Messages) => void = (m: unknown) => {}
+) => {
   const pubSubUrl = process.env.NEXT_PUBLIC_PUB_SUB_URL;
   if (!pubSubUrl) {
     throw new Error("Missing .env var NEXT_PUBLIC_PUB_SUB_URL");
   }
 
-  return useWebSocket<Messages>(pubSubUrl);
+  const [connected, setConnected] = useState(false);
+  const { lastJsonMessage, readyState, sendMessage } =
+    useWebSocket<Messages>(pubSubUrl);
+
+  useEffect(() => {
+    if (!connected && readyState === ReadyState.OPEN) {
+      topics.forEach((topic) => pubSubSubscribe(topic, sendMessage));
+      setConnected(true);
+    }
+  }, [connected, readyState, topics, setConnected, sendMessage]);
+
+  useEffect(() => {
+    if (lastJsonMessage === null) return;
+
+    messageHandler(lastJsonMessage);
+  }, [lastJsonMessage, messageHandler]);
+
+  return { sendMessage, readyState };
 };
 
 export const pubSubSubscribe = (

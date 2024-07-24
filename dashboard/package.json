@@ -1,7 +1,6 @@
 {
   "name": "dashboard",
-  "module": "index.ts",
-  "type": "module",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev -p 5179",
@@ -13,7 +12,6 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@mui/material": "^5.15.21",
-    "@mui/styled-engine-sc": "^6.0.0-alpha.18",
     "@uidotdev/usehooks": "^2.4.1",
     "echarts": "^5.4.2",
     "echarts-for-react": "^3.0.2",

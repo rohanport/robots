@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import ReactECharts from "echarts-for-react";
-import { usePubSub, pubSubSubscribe } from "@/pages/api";
-import { ReadyState } from "react-use-websocket";
+import { usePubSub } from "@/pages/api";
 import { useThrottle } from "@uidotdev/usehooks";
 
 const Container = styled.div`
@@ -58,37 +57,25 @@ export const WheelyChart = () => {
   const throttledFoodP = useThrottle(foodP, 500);
   const throttledPredictedPs = useThrottle(predictedPs, 500);
 
-  const [connected, setConnected] = useState(false);
-  const { lastJsonMessage, readyState, sendMessage } = usePubSub<
-    WheelyPositionMessage | FoodPositionMessage | PredictionsMessage
-  >();
-
-  const subscribeToTopics = () =>
-    topics.forEach((topic) => pubSubSubscribe(topic, sendMessage));
-
-  useEffect(() => {
-    if (!connected && readyState === ReadyState.OPEN) {
-      subscribeToTopics();
-      setConnected(true);
+  usePubSub(
+    topics,
+    (msg: WheelyPositionMessage | FoodPositionMessage | PredictionsMessage) => {
+      const { payload } = msg;
+      const { topic, data } = payload;
+      if (topic === "/ros/wheely/sensory_states/position") {
+        console.log("setting p", data);
+        setP([data.x, data.y]);
+      }
+      if (topic === "/ros/wheely/food/position") {
+        setFoodP([data.x, data.y]);
+      }
+      if (topic === "/rxinfer/wheely/predictions") {
+        setPredictedPs(data.ps);
+      }
     }
-  }, [connected, readyState, sendMessage, setConnected]);
+  );
 
-  useEffect(() => {
-    if (lastJsonMessage === null) return;
-
-    const { payload } = lastJsonMessage;
-    const { topic, data } = payload;
-    if (topic === "/ros/wheely/sensory_states/position") {
-      setP([data.x, data.y]);
-    }
-    if (topic === "/ros/wheely/food/position") {
-      setFoodP([data.x, data.y]);
-    }
-    if (topic === "/rxinfer/wheely/predictions") {
-      setPredictedPs(data.ps);
-    }
-  }, [lastJsonMessage]);
-
+  console.log({ throttledP });
   const option = {
     title: { text: "Agent", textStyle: { color: "white" } },
     xAxis: {

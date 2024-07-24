@@ -25,67 +25,61 @@ export const Pathfinder = () => {
   const [velocityHistory, setVelocityHistory] = useState(
     new Array(freeEnergyHistoryLength).fill(0)
   );
-  const [connected, setConnected] = useState(false);
   const [paused, setPaused] = useState(false);
 
-  const { lastJsonMessage, readyState, sendMessage } = usePubSub<{
-    food_p?: number[];
-    p?: number[];
-    predicted_ps?: number[][];
-    action?: number[];
-    hunger?: number;
-    predicted_hungers?: number[];
-    predicted_food_p?: number[];
-    free_energy?: number;
-    velocity?: number;
-    randomness?: number;
-  }>();
-
-  useEffect(() => {
-    if (lastJsonMessage === null) return;
-    const {
-      food_p: newFoodP,
-      p: newP,
-      predicted_ps: newPredictedPs,
-      hunger: newHunger,
-      predicted_hungers: newPredictedHungers,
-      predicted_food_p: newPredictedFoodP,
-      free_energy: freeEnergy,
-      velocity,
-      randomness,
-    } = lastJsonMessage;
-    if (newFoodP !== undefined) setFoodP(newFoodP);
-    if (newP !== undefined) setP(newP);
-    if (newPredictedPs !== undefined) setPredictedPs(newPredictedPs);
-    if (newHunger !== undefined) setHunger(newHunger);
-    if (newPredictedHungers !== undefined)
-      setPredictedHungers(newPredictedHungers);
-    if (newPredictedFoodP !== undefined) setPredictedFoodP(newPredictedFoodP);
-    if (freeEnergy !== undefined)
-      setFreeEnergyHistory(freeEnergyHistory.slice(1).concat([freeEnergy]));
-    if (velocity !== undefined)
-      setVelocityHistory(velocityHistory.slice(1).concat([velocity]));
-    if (randomness !== undefined)
-      setRandomnessHistory(randomnessHistory.slice(1).concat([randomness]));
-  }, [lastJsonMessage]);
-
-  const subscribeToTopics = () =>
-    topics.forEach((topic) => pubSubSubscribe(topic, sendMessage));
-  const unsubscribeFromTopics = () =>
-    topics.forEach((topic) => pubSubUnsubscribe(topic, sendMessage));
+  const { readyState, sendMessage } = usePubSub(
+    topics,
+    (msg: {
+      food_p?: number[];
+      p?: number[];
+      predicted_ps?: number[][];
+      action?: number[];
+      hunger?: number;
+      predicted_hungers?: number[];
+      predicted_food_p?: number[];
+      free_energy?: number;
+      velocity?: number;
+      randomness?: number;
+    }) => {
+      const {
+        food_p: newFoodP,
+        p: newP,
+        predicted_ps: newPredictedPs,
+        hunger: newHunger,
+        predicted_hungers: newPredictedHungers,
+        predicted_food_p: newPredictedFoodP,
+        free_energy: freeEnergy,
+        velocity,
+        randomness,
+      } = msg;
+      if (newFoodP !== undefined) setFoodP(newFoodP);
+      if (newP !== undefined) setP(newP);
+      if (newPredictedPs !== undefined) setPredictedPs(newPredictedPs);
+      if (newHunger !== undefined) setHunger(newHunger);
+      if (newPredictedHungers !== undefined)
+        setPredictedHungers(newPredictedHungers);
+      if (newPredictedFoodP !== undefined) setPredictedFoodP(newPredictedFoodP);
+      if (freeEnergy !== undefined)
+        setFreeEnergyHistory(freeEnergyHistory.slice(1).concat([freeEnergy]));
+      if (velocity !== undefined)
+        setVelocityHistory(velocityHistory.slice(1).concat([velocity]));
+      if (randomness !== undefined)
+        setRandomnessHistory(randomnessHistory.slice(1).concat([randomness]));
+    }
+  );
 
   const pauseFn = useCallback(
     (event: KeyboardEvent) => {
       if (event.code !== "KeyP") return;
 
       if (paused) {
-        subscribeToTopics();
+        topics.forEach((topic) => pubSubSubscribe(topic, sendMessage));
       } else {
-        unsubscribeFromTopics();
+        topics.forEach((topic) => pubSubUnsubscribe(topic, sendMessage));
       }
       setPaused(!paused);
     },
-    [sendMessage, paused, setPaused]
+    [paused, setPaused, sendMessage]
   );
 
   useEffect(() => {
@@ -95,13 +89,6 @@ export const Pathfinder = () => {
       document.removeEventListener("keydown", pauseFn, false);
     };
   }, [pauseFn]);
-
-  useEffect(() => {
-    if (!connected && readyState === ReadyState.OPEN) {
-      subscribeToTopics();
-      setConnected(true);
-    }
-  }, [connected, readyState, sendMessage, setConnected]);
 
   if (readyState !== ReadyState.OPEN) {
     return null;

@@ -1,9 +1,7 @@
-import { useEffect } from "react";
-import { pubSubSubscribe, usePubSub } from "../api";
-import { ReadyState } from "react-use-websocket";
+import { usePubSub } from "../api";
 
 export const RosLogger = () => {
-  const { lastJsonMessage, readyState, sendMessage } = usePubSub<{
+  usePubSub<{
     food_p?: number[];
     p?: number[];
     predicted_ps?: number[][];
@@ -14,15 +12,7 @@ export const RosLogger = () => {
     free_energy?: number;
     velocity?: number;
     randomness?: number;
-  }>();
-
-  useEffect(() => console.log(lastJsonMessage), [lastJsonMessage]);
-
-  useEffect(() => {
-    if (readyState === ReadyState.OPEN) {
-      pubSubSubscribe("/chatter", sendMessage);
-    }
-  }, [readyState, sendMessage]);
+  }>(["/chatter"], (msg: unknown) => console.log(msg));
 
   return <></>;
 };
