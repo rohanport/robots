@@ -12,7 +12,6 @@ class SensorPositionNode(Node):
     def __init__(self):
         super().__init__('sensor_position')
 
-        self.is_paused = True
         self.pause_sub = self.create_subscription(
             Pause,
             'dashboard/wheely/pause',
@@ -21,13 +20,17 @@ class SensorPositionNode(Node):
         
         self.publisher = self.create_publisher(SensoryStatePosition, 'ros/wheely/sensory_states/position', 10)
 
-        self.get_logger().info(f'Started: paused={self.is_paused}')
+        self.is_paused = True
+        self.set_paused(False)
 
     def pause_callback(self, msg):
-        if (msg.pause and not self.is_paused):
+        self.set_paused(msg.pause)
+
+    def set_paused(self, pause):
+        if (pause and not self.is_paused):
             self.destroy_subscription(self.pose_sub)
             self.is_paused = True
-        elif (not msg.pause and self.is_paused):
+        elif (not pause and self.is_paused):
             self.pose_sub = self.create_subscription(
                 TransformStamped,
                 'model/wheely/pose',

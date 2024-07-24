@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String
 from custom_messages.msg import ActionDiffDrive
 from geometry_msgs.msg import Twist
-from geometry_msgs.msg import Vector3
 
 class ActionDiffDriveNode(Node):
 
