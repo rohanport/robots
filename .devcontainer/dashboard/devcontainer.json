@@ -1,0 +1,24 @@
+{
+  "name": "dashboard",
+  "dockerComposeFile": "../../docker-compose.yaml",
+  "service": "dashboard-dev",
+  "runServices": ["dashboard-dev"],
+  "workspaceFolder": "/workspace/dashboard",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.fontFamily": "MesloLGS NF",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "bash",
+            "icon": "terminal-bash"
+          },
+          "zsh": {
+            "path": "zsh"
+          }
+        }
+      }
+    }
+  }
+}

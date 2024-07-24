@@ -24,14 +24,28 @@ services:
     network_mode: host
     ipc: host
     volumes:
-      # Mount the source code
-      - ./pub-sub:/pub-sub:rw
+      # Mount repository
+      - .:/workspace:rw
     user: bun
     command: bash -c "bun install && bun run start-dev"
 
   pub-sub-dev:
     image: robots:pub-sub-dev
     extends: pub-sub
+    build:
+      context: .
+      dockerfile: pub-sub/docker/Dockerfile
+      target: dev
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+        - USERNAME=${USERNAME}
+    volumes:
+      # Mount repository
+      - .:/workspace:rw
+      # Mount container commandhistory
+      - ./.devcontainer/pub-sub/commandhistory:/commandhistory:rw
+    user: ${USERNAME}
     command: sleep infinity
 
   # ROS Base image
@@ -82,17 +96,17 @@ services:
       args:
         - UID=${UID:-1000}
         - GID=${UID:-1000}
-        - USERNAME=${USERNAME:-devuser}
+        - USERNAME=${USERNAME:-ros-dev}
     volumes:
-      # Mount the source code
+      # Mount repository
+      - .:/workspace:rw
+      # Mount robot modules to /overlay_ws
       - ./ros/custom_messages:/overlay_ws/src/custom_messages:rw
       - ./ros/pathfinder:/overlay_ws/src/pathfinder:rw
       - ./ros/wheely:/overlay_ws/src/wheely:rw
-      # Mount colcon build artifacts for faster rebuilds
-      - ./.colcon/build/:/overlay_ws/build/:rw
-      - ./.colcon/install/:/overlay_ws/install/:rw
-      - ./.colcon/log/:/overlay_ws/log/:rw
-    user: ${USERNAME:-devuser}
+      # Mount container commandhistory
+      - ./.devcontainer/ros/commandhistory:/commandhistory:rw
+    user: ${USERNAME:-ros-dev}
     command: sleep infinity
 
   # RxInfer image
@@ -107,14 +121,18 @@ services:
         - GID=${UID:-1000}
         - USERNAME=${USERNAME:-rxinfer}
     volumes:
-      # Mount the source code
-      - ./rxinfer:/rxinfer:rw
+      # Mount repository
+      - .:/workspace:rw
+      # Mount container commandhistory
+      - ./.devcontainer/rxinfer/commandhistory:/commandhistory:rw
     user: ${USERNAME:-rxinfer}
     # Interactive shell
     stdin_open: true
     tty: true
     network_mode: host
     ipc: host
+    environment:
+      PUB_SUB_URL: ws://127.0.0.1:3000
     command: sleep infinity
 
   # RxInfer Developer container
@@ -147,8 +165,8 @@ services:
     network_mode: host
     ipc: host
     volumes:
-      # Mount the source code
-      - ./dashboard:/dashboard:rw
+      # Mount repository
+      - .:/workspace:rw
     ulimits:
       memlock:
         soft: -1
@@ -161,4 +179,18 @@ services:
   dashboard-dev:
     image: robots:dashboard-dev
     extends: dashboard
+    build:
+      context: .
+      dockerfile: dashboard/docker/Dockerfile
+      target: dev
+      args:
+        - UID=${UID:-1000}
+        - GID=${GID:-1000}
+        - USERNAME=${USERNAME}
+    volumes:
+      # Mount repository
+      - .:/workspace:rw
+      # Mount container commandhistory
+      - ./.devcontainer/dashboard/commandhistory:/commandhistory:rw
+    user: ${USERNAME}
     command: sleep infinity

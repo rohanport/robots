@@ -71,9 +71,6 @@ FROM base AS overlay
 RUN mkdir -p /overlay_ws/src
 WORKDIR /overlay_ws
 
-# Copy nodes into overlay
-COPY ./ros/pathfinder/ ./src/pathfinder/
-
 RUN source /ros_ws/install/setup.bash \
  && apt-get update -y \
  && rosdep install --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} -y \
@@ -89,7 +86,7 @@ ENTRYPOINT [ "/entrypoint.sh" ]
 FROM overlay AS dev
 
 # Dev container arguments
-ARG USERNAME=devuser
+ARG USERNAME=ros-dev
 ARG UID=1000
 ARG GID=${UID}
 
@@ -107,6 +104,11 @@ RUN groupadd --gid $GID $USERNAME \
 
 # Set the ownership of the overlay workspace to the new user
 RUN chown -R ${UID}:${GID} /overlay_ws/
+
+# Used to persist bash history as per https://code.visualstudio.com/remote/advancedcontainers/persist-bash-history
+RUN SNIPPET="export PROMPT_COMMAND='history -a' && sudo chown -R $USERNAME /commandhistory && export HISTFILE=/commandhistory/.bash_history" \
+    && mkdir /commandhistory \
+    && echo "$SNIPPET" >> "/home/$USERNAME/.bashrc"
 
 # Set the user and source entrypoint in the user's .bashrc file
 USER ${USERNAME}

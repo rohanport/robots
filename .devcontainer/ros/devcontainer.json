@@ -1,0 +1,24 @@
+{
+  "name": "ros",
+  "dockerComposeFile": "../../docker-compose.yaml",
+  "service": "ros-dev",
+  "runServices": ["ros-dev"],
+  "workspaceFolder": "/workspace/ros",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.fontFamily": "MesloLGS NF",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "bash",
+            "icon": "terminal-bash"
+          },
+          "zsh": {
+            "path": "zsh"
+          }
+        }
+      }
+    }
+  }
+}

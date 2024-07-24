@@ -1,23 +1,21 @@
 #!/bin/bash
 # Basic entrypoint for ROS / Colcon Docker containers
 
+SHELL_TYPE=$(ps -hp $$ | awk '{print $5}' | xargs basename)
+
 # Source ROS 2
-source /opt/ros/${ROS_DISTRO}/setup.bash
-echo "Sourced ROS 2 ${ROS_DISTRO}"
+source /opt/ros/${ROS_DISTRO}/setup.$SHELL_TYPE
 
 # Source the base workspace, if built
-if [ -f /ros_ws/install/setup.bash ]
+if [ -f /ros_ws/install/setup.$SHELL_TYPE ]
 then
-  source /ros_ws/install/setup.bash
-  echo "Sourced base workspace"
+  source /ros_ws/install/setup.$SHELL_TYPE
 fi
 
 # Grant permissions and source the overlay workspace, if built
-if [ -f /overlay_ws/install/setup.bash ]
+if [ -f /overlay_ws/install/setup.$SHELL_TYPE ]
 then
-  sudo chown -R ${UID} /overlay_ws/
-  source /overlay_ws/install/setup.bash
-  echo "Sourced overlay workspace"
+  source /overlay_ws/install/setup.$SHELL_TYPE
 fi
 
 # Execute the command passed into this entrypoint

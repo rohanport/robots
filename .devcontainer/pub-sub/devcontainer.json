@@ -1,0 +1,24 @@
+{
+  "name": "pub-sub",
+  "dockerComposeFile": "../../docker-compose.yaml",
+  "service": "pub-sub-dev",
+  "runServices": ["pub-sub-dev"],
+  "workspaceFolder": "/workspace/pub-sub",
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "terminal.integrated.fontFamily": "MesloLGS NF",
+        "terminal.integrated.profiles.linux": {
+          "bash": {
+            "path": "bash",
+            "icon": "terminal-bash"
+          },
+          "zsh": {
+            "path": "zsh"
+          }
+        }
+      }
+    }
+  }
+}

@@ -5,3 +5,6 @@
 # draw.io save state files
 *.drawio.bkp
 *.drawio:Zone.Identifier
+
+# Command history from devcontainers
+**/commandhistory/
