@@ -5,6 +5,7 @@ import { Button } from "@mui/material";
 import { usePubSub } from "@/pages/api";
 import { ReadyState } from "react-use-websocket";
 import { pubSubPublishEvent } from "@/pages/api/usePubSub";
+import { FreeEnergyChart } from "./FreeEnergyChart";
 
 const Container = styled.div`
   display: flex;
@@ -36,6 +37,7 @@ export const Wheely = () => {
     <Container>
       <Button onClick={togglePause}>{paused ? "Start" : "Stop"}</Button>
       <WheelyChart />
+      <FreeEnergyChart />
     </Container>
   );
 };
