@@ -13,6 +13,7 @@
 
 services:
   pub-sub:
+    container_name: pub-sub
     image: robots:pub-sub
     build:
       context: .
@@ -30,6 +31,7 @@ services:
     command: bash -c "bun install && bun run start-dev"
 
   pub-sub-dev:
+    container_name: pub-sub-dev
     image: robots:pub-sub-dev
     extends: pub-sub
     build:
@@ -50,6 +52,7 @@ services:
 
   # ROS Base image
   ros-base:
+    container_name: ros-base
     image: robots:ros-base
     build:
       context: .
@@ -77,6 +80,7 @@ services:
 
   # ROS Overlay image containing the source code.
   ros-overlay:
+    container_name: ros-overlay
     extends: ros-base
     image: robots:ros-overlay
     build:
@@ -87,6 +91,7 @@ services:
 
   # ROS Developer container
   ros-dev:
+    container_name: ros-dev
     extends: ros-overlay
     image: robots:ros-dev
     build:
@@ -111,6 +116,7 @@ services:
 
   # RxInfer image
   rxinfer:
+    container_name: rxinfer
     image: robots:rxinfer
     build:
       context: .
@@ -137,6 +143,7 @@ services:
 
   # RxInfer Developer container
   rxinfer-pathfinder:
+    container_name: rxinfer-pathfinder
     extends: rxinfer
     image: robots:rxinfer-pathfinder
     command: julia pathfinder/main.jl
@@ -146,6 +153,7 @@ services:
 
   # RxInfer Developer container
   rxinfer-wheely:
+    container_name: rxinfer-wheely
     extends: rxinfer
     image: robots:rxinfer-wheely
     command: julia wheely/main.jl
@@ -154,6 +162,7 @@ services:
       PUB_SUB_URL: ws://127.0.0.1:3000
 
   dashboard:
+    container_name: dashboard
     image: robots:dashboard
     build:
       context: .
@@ -177,6 +186,7 @@ services:
       NEXT_PUBLIC_PUB_SUB_URL: ws://127.0.0.1:3000
 
   dashboard-dev:
+    container_name: dashboard-dev
     image: robots:dashboard-dev
     extends: dashboard
     build:
